@@ -27,6 +27,12 @@ class Harper < Sinatra::Base
     @@mocks = {}
   end
 
+  get '/h/mocks/:mock_id' do |mock_name|
+    content_type :json
+    status "200"
+    @@mocks[mock_name].to_json
+  end
+
   delete '/h/mocks/:mock_id' do |mock_name|
     @@mocks[mock_name] = nil
 

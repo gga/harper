@@ -4,7 +4,7 @@ Feature: Mock an HTTP RPC web service
   So that I can fluently describe my test scenarios
 
   Scenario: Submit a simple service request to mock
-    Given the following response mock:
+    Given the following response mock, known as "original":
       """
       {
         "url": "/service",
@@ -13,9 +13,9 @@ Feature: Mock an HTTP RPC web service
         "body": "fake body"
       }
       """
-    When  the application creates the mock
+    When  the application POSTs the mock "original" to "/h/mocks"
     Then  the response code should be "201"
-    # And   the mock for "/service" should be identifiable
+    And   the "original" mock is available at the URL in the "Location" header
     When  the application issues a "GET" request for "/service"
     Then  the response code should be "200"
     And   the response "content-type" header should be "text/plain"
@@ -23,9 +23,9 @@ Feature: Mock an HTTP RPC web service
       """
       fake body
       """
-    When the application removes the mock for "/service"
+    When the application removes the mock "original"
     And  the application issues a "GET" request for "/service"
-    # Then the response code should be "503"
+    Then the response code should be "503"
 
   Scenario Outline: All HTTP methods can be mocked
     Given a defined response mock with a "method" of "<METHOD>"

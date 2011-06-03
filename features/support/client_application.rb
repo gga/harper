@@ -8,16 +8,20 @@ class ClientApplication
 
   attr_reader :response
 
-  def mock_body(content)
-    @mock_body = content
+  def initialize
+    @known_mocks = Hash.new { |h, k| h[k] = {} }
   end
 
-  def define_mock
-    @response = self.class.post "/h/mocks", :body => @mock_body
+  def known_mock(name, description = {})
+    @known_mocks[name].merge!(description)
   end
 
-  def remove_mock(mock_url)
-    @response = self.class.delete "/h/mocks#{mock_url}"
+  def define_mock(name)
+    @response = self.class.post "/h/mocks", :body => @known_mocks[name][:body]
+  end
+
+  def remove_mock(name)
+    @response = self.class.delete @known_mocks[name][:url]
   end
 
   def get(options)
