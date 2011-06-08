@@ -28,3 +28,7 @@ end
 Then /^the response body should be:$/ do |expected|
   response.body.should == expected
 end
+
+Then /^the response time should be at least "(\d*)"$/ do |min_time|
+  response.time.should >= min_time.to_i
+end

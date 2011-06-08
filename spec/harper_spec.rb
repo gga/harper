@@ -13,10 +13,12 @@ describe Harper do
   let(:status_code) { 200 }
   let(:content_type) { "text/plain" }
   let(:body) { "fake body" }
+  let(:delay) { 0 }
   
   let(:mock_def) do
     { :method => method,
       :url => url,
+      :delay => delay,
       :'content-type' => content_type,
       :body => body }.to_json
   end
@@ -100,6 +102,40 @@ describe Harper do
         last_response.should be_ok
         self.send(method.downcase.to_sym, url)
         last_response.status.should == 503
+      end
+    end
+  end
+
+  context "delayed mocks" do
+
+    before(:each) do
+      post '/h/mocks', mock_def
+      @created_mock = last_response.headers['location']
+    end
+
+    after(:each) do
+      delete @created_mock
+    end
+
+    context "short delay" do
+      let(:delay) { 100 }
+
+      it "should take at least the specified delay to provide a response" do
+        time { get url }.should >= delay
+      end
+    end
+    context "long delay" do
+      let(:delay) { 1000 }
+
+      it "should take at least the specified delay to provide a response" do
+        time { get url }.should >= delay
+      end
+    end
+    context "no delay specified" do
+      let(:delay) { nil }
+
+      it "should take close to 0 delay in providing a response" do
+        time { get url }.should <= 1.0
       end
     end
   end

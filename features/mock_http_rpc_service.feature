@@ -55,3 +55,13 @@ Feature: Mock an HTTP RPC web service
     |    500 |
     |    503 |
     
+  Scenario Outline: Responses from the server can be delayed
+    Given a defined response mock with a "delay" of "<MILLISECONDS>"
+    When  the application issues a "GET" request to the mock
+    Then  the response time should be at least "<MILLISECONDS>"
+  Examples:
+    | MILLISECONDS |
+    |            0 |
+    |           10 |
+    |          100 |
+    |         1000 |

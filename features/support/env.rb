@@ -8,6 +8,8 @@ require File.join(File.dirname(__FILE__), 'client_application')
 require 'sham_rack'
 require 'rspec'
 
+require File.join(File.dirname(__FILE__), '..', '..', 'spec/spec_helper')
+
 class HarperWorld
   include RSpec::Expectations
   include RSpec::Matchers

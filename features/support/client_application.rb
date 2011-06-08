@@ -1,5 +1,12 @@
 require 'httparty'
 require 'json'
+require 'benchmark'
+
+module HTTParty
+  class Response
+    attr_accessor :time
+  end
+end
 
 class ClientApplication
   include HTTParty
@@ -25,18 +32,24 @@ class ClientApplication
   end
 
   def get(options)
-    @response = self.class.get options[:from]
+    timed { @response = self.class.get options[:from] }
   end
 
   def post(options)
-    @response = self.class.post options[:to]
+    timed { @response = self.class.post options[:to] }
   end
 
   def delete(options)
-    @response = self.class.delete options[:at]
+    timed { @response = self.class.delete options[:at] }
   end
 
   def put(options)
-    @response = self.class.put options[:to]
+    timed { @response = self.class.put options[:to] }
+  end
+
+  def timed
+    val = nil
+    timed = time { val = yield }
+    val.time = timed
   end
 end

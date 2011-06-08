@@ -17,6 +17,7 @@ class Harper < Sinatra::Base
 
     mock['id'] = mock_id(mock['url'])
     mock['method'].upcase!
+    mock['delay'] = mock['delay'].to_f / 1000.0
     @@mocks[mock['id']] = mock
 
     headers['location'] = "/h/mocks/#{mock['id']}"
@@ -47,6 +48,7 @@ class Harper < Sinatra::Base
       if mock && request.request_method == mock['method']
         content_type mock['content-type']
         status mock['status'] || "200"
+        sleep mock['delay']
         mock['body']
       else
         status "503"
