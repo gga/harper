@@ -75,6 +75,14 @@ describe Harper do
         last_response.headers['Location'].should match(%r{/h/mocks/})
       end
 
+      context "long service urls" do
+        let(:url) { "http://www.averylong.com/url/thathas/multiple/slashes/and/thelike/" }
+        it "should be queryable" do
+          get last_response.headers['Location']
+          last_response.status.should == 200
+        end
+      end
+
       context "is a mock" do
         before(:each) do
           self.send(method.downcase.to_sym, url)

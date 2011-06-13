@@ -8,7 +8,7 @@ class Harper < Sinatra::Base
 
   helpers do
     def mock_id(url)
-      Base64.encode64(url).chomp
+      [url].pack('m').tr("+/=", "-_.").gsub("\n", '')
     end
   end
 
