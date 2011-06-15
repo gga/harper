@@ -1,6 +1,11 @@
 require 'rspec/core/rake_task'
 require 'cucumber'
 require 'cucumber/rake/task'
+require 'bundler'
+
+namespace :gem do
+  Bundler::GemHelper.install_tasks
+end
 
 namespace :test do
   RSpec::Core::RakeTask.new(:rspec) do |t|

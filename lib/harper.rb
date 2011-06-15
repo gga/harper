@@ -4,6 +4,8 @@ require 'json'
 
 class Harper < Sinatra::Base
 
+  Version = "0.0.1"
+
   @@mocks = {}
 
   helpers do
