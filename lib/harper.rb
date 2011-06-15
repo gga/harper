@@ -1,5 +1,6 @@
 require 'base64'
 require 'sinatra/base'
+require 'logger'
 require 'json'
 
 class Harper < Sinatra::Base
@@ -8,7 +9,17 @@ class Harper < Sinatra::Base
 
   @@mocks = {}
 
+  enable :logging
+
+  configure do
+    LOGGER = Logger.new("sinatra.log")
+  end
+
   helpers do
+    def logger
+      LOGGER
+    end
+
     def mock_id(url)
       [url].pack('m').tr("+/=", "-_.").gsub("\n", '')
     end
@@ -17,11 +28,15 @@ class Harper < Sinatra::Base
   post '/h/mocks' do
     mock = JSON(request.body.read)
 
+    mock['url'] = mock['url'][1..-1] if mock['url'] =~ /^\//
+
     mock['id'] = mock_id(mock['url'])
     mock['method'].upcase!
     mock['delay'] = mock['delay'].to_f / 1000.0
     @@mocks[mock['id']] = mock
 
+    logger.info("Created mock for endpoint: '#{mock['url']}'")
+    
     headers['location'] = "/h/mocks/#{mock['id']}"
     status "201"
   end
@@ -44,13 +59,18 @@ class Harper < Sinatra::Base
 
   [:get, :post, :put, :delete].each do |method|
     self.send(method, '*') do
-      mock_id = mock_id(request.path)
+      mock_id = mock_id(request.path[1..-1])
+
+      logger.debug("#{request.request_method} request for a mock: '#{request.path}'")
 
       mock = @@mocks[mock_id]
       if mock && request.request_method == mock['method']
         content_type mock['content-type']
         status mock['status'] || "200"
         sleep mock['delay']
+        
+        logger.info("Serving mocked body for endpoint: '#{mock['url']}'")
+
         mock['body']
       else
         status "503"
