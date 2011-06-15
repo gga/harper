@@ -1,3 +1,7 @@
 #!/usr/bin/env ruby
 
 require "harper"
+
+port = ARGV.shift || 4567
+
+Rack::Server.start :app => Harper, :Port => port
