@@ -12,7 +12,7 @@ Gem::Specification.new do |s|
   s.summary     = %q{Dead simple mocking for HTTP services}
   s.description = %q{Dead simple mocking for HTTP services, a Sinatra app}
 
-  # s.rubyforge_project = "harper"
+  s.rubyforge_project = "harper"
 
   s.required_rubygems_version = ">= 1.3.6"
 
