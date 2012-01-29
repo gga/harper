@@ -4,4 +4,8 @@ require "harper"
 
 port = ARGV.shift || 4567
 
-Rack::Server.start :app => Harper::App, :Port => port
+# Harper needs access to the server hosting itself so that it can shut
+# it down on demand
+server = Rack::Server.new :app => Harper::App, :Port => port, :server => 'webrick'
+Harper::App.server(server.server)
+server.start

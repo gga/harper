@@ -9,6 +9,11 @@ module Harper
     Version = "0.0.2"
 
     @@mocks = {}
+    @@server = nil
+
+    def self.server(server)
+      @@server = server
+    end
 
     enable :logging
 
@@ -56,6 +61,15 @@ module Harper
       @@mocks[mock_name] = nil
 
       status "200"
+    end
+
+    put '/h/control' do
+      cmd = JSON(request.body.read)
+
+      case cmd["command"]
+      when "quit"
+        @@server.shutdown
+      end
     end
 
     [:get, :post, :put, :delete].each do |method|

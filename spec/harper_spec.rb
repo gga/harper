@@ -150,4 +150,14 @@ describe Harper::App do
     end
   end
 
+  context "controlling harper" do
+    
+    it "should exit, abruptly, on demand" do
+      host = mock('hosting server')
+      host.should_receive(:shutdown)
+      Harper::App.server(host)
+      put '/h/control', {:command => "quit"}.to_json
+    end
+  end
+
 end
