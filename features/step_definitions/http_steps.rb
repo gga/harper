@@ -14,7 +14,7 @@ When /^the application issues an? "([A-Z]+)" request for "([^"]*)"$/ do |method,
 end
 
 When /^the application issues an? "([A-Z]+)" request to the mock$/ do |method|
-  When %{the application issues a "#{method}" request for "/service"}
+  step %{the application issues a "#{method}" request for "/service"}
 end
 
 Then /^the response code should be "(\d+)"$/ do |expected|

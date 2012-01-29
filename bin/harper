@@ -4,4 +4,4 @@ require "harper"
 
 port = ARGV.shift || 4567
 
-Rack::Server.start :app => Harper, :Port => port
+Rack::Server.start :app => Harper::App, :Port => port

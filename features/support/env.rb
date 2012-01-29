@@ -21,5 +21,5 @@ World do
 end
 
 ShamRack.at("example.com").rackup do
-  run Harper.new
+  run Harper::App.new
 end

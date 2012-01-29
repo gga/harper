@@ -1,12 +1,14 @@
+$: << File.dirname(__FILE__) + "/.."
+
 require 'spec/spec_helper'
 require 'harper'
 
-describe Harper do
+describe Harper::App do
   include Rack::Test::Methods
 
   supported_verbs = ["GET", "POST", "PUT", "DELETE"]
 
-  let(:app) { Harper.new }
+  let(:app) { Harper::App.new }
 
   let(:method) { "GET" }
   let(:url) { "/service" }
