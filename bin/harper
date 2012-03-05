@@ -1,11 +1,44 @@
 #!/usr/bin/env ruby
 
 require "harper"
+require "trollop"
+require "open3"
 
-port = ARGV.shift || 4567
+opts = Trollop::options do
+  opt :port, "The port to run Harper on", :default => 4567
+  opt :bg, "Run in the background", :default => false
+end
+
+def start(port)
+  server = Rack::Server.new :app => Harper::App, :Port => port, :server => 'webrick'
+  Harper::App.server(server.server)
+  server.start
+end
+
+def start_in_background(port)
+  read, write = IO.pipe
+
+  fork do
+    read.close
+    Open3.popen2({}, "harper --port #{port}", {:err => [:child, :out]}) do |i, o|
+      found_start = false
+      while !found_start && line = o.readline
+        if line =~ /WEBrick::HTTPServer#start/
+            write.puts "Harper started"
+          found_start = true
+        end
+      end
+    end
+  end
+
+  write.close
+  read.readline
+end
 
 # Harper needs access to the server hosting itself so that it can shut
 # it down on demand
-server = Rack::Server.new :app => Harper::App, :Port => port, :server => 'webrick'
-Harper::App.server(server.server)
-server.start
+if opts[:bg]
+  start_in_background(opts[:port])
+else
+  start(opts[:port])
+end

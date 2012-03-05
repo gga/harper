@@ -19,6 +19,7 @@ Gem::Specification.new do |s|
   s.add_dependency "sinatra", ">= 1.0.0"
   s.add_dependency "httparty"
   s.add_dependency "json", ">= 1.4.6"
+  s.add_dependency "trollop"
 
   s.add_development_dependency "rack-test"
   s.add_development_dependency "sham_rack"
