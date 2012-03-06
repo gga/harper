@@ -15,7 +15,7 @@ class HarperClient
   end
 
   def start
-    system("harper --port 4568 --bg")
+    Kernel.system("harper --port 4568 --bg")
     @started = true
   end
 
