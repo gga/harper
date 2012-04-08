@@ -22,6 +22,9 @@ class HarperClient
   def stop
     self.class.put "/h/control", :body => {:command => "quit"}.to_json
     @started = false
+  rescue Exception => e
+    # Ignore the error here as it's pretty common for the connection
+    # to be killed out from under the app
   end
 
   def mock(mock)

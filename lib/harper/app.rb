@@ -6,8 +6,6 @@ require 'json'
 module Harper
   class App < Sinatra::Base
 
-    Version = "0.0.2"
-
     @@mocks = {}
     @@server = nil
 

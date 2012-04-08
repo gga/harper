@@ -36,6 +36,11 @@ describe HarperClient do
       subject.stop
       subject.should_not be_started
     end
+
+    it "should swallow any errors that might result" do
+      HarperClient.stub!(:put).and_throw(:anything)
+      expect { subject.stop }.to_not raise_error
+    end
   end
 
   describe '#mock' do
