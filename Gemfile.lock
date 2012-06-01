@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    harper (0.0.4)
+    harper (0.1.1)
       httparty
       json (>= 1.4.6)
       sinatra (>= 1.0.0)

@@ -34,6 +34,7 @@ class HarperClient
                 else
                   mock.to_json
                 end
+    self.class.headers "Content-Type" => "application/json"
     self.class.post "/h/mocks", :body => mock_body
   end
 end
