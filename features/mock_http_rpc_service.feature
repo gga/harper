@@ -27,6 +27,33 @@ Feature: Mock an HTTP RPC web service
     And  the application issues a "GET" request for "/service"
     Then the response code should be "503"
 
+  Scenario: Cycle through the bodies of a mock
+    Given the following response mock, known as "sequential":
+      """
+      {
+        "url": "/sequential",
+        "method": "GET",
+        "content-type": "text/plain",
+        "body": ["body 1", "body 2"]
+      }
+      """
+    When  the application POSTs the mock "sequential" to "/h/mocks"
+    And   the application issues a "GET" request for "/sequential"
+    Then  the response body should be:
+      """
+      body 1
+      """
+    When  the application issues a "GET" request for "/sequential"
+    Then  the response body should be:
+      """
+      body 2
+      """
+    When  the application issues a "GET" request for "/sequential"
+    Then  the response body should be:
+      """
+      body 1
+      """
+
   Scenario Outline: All HTTP methods can be mocked
     Given a defined response mock with a "method" of "<METHOD>"
     When the application issues a "<METHOD>" request to the mock

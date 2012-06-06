@@ -84,7 +84,14 @@ module Harper
           
           logger.info("Serving mocked body for endpoint: '#{mock['url']}'")
 
-          mock['body']
+          case mock['body']
+          when Array
+            next_body = mock['next'] || -1
+            mock['next'] = (next_body + 1) % mock['body'].length
+            mock['body'][mock['next']]
+          else
+            mock['body']
+          end
         else
           status "503"
         end

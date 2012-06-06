@@ -150,6 +150,25 @@ describe Harper::App do
     end
   end
 
+  context "sequential mocks" do
+    let(:body) { ["b1", "b2"] }
+
+    before(:each) do
+      post '/h/mocks', mock_def
+      @created_mock = last_response.headers['location']
+    end
+
+    after(:each) { delete @created_mock }
+
+    it "should cycle through the available bodies" do
+      get url
+      last_response.body.should == "b1"
+      get url
+      last_response.body.should == "b2"
+    end
+
+  end
+
   context "controlling harper" do
     
     it "should exit, abruptly, on demand" do
@@ -158,6 +177,7 @@ describe Harper::App do
       Harper::App.server(host)
       put '/h/control', {:command => "quit"}.to_json
     end
+
   end
 
 end
