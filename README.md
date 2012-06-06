@@ -43,7 +43,9 @@ Harper will silently replace it with the new mock.
 * *status*: The HTTP status code to provide. Optional. Defaults to 200.
 * *content_type*: What content-type header to set when responding with
    the mock. Required.
-* *body*: A string to be used as the HTTP response body. Required.
+* *body*: Either a string to be used as the HTTP response body, or an
+   array of strings. If an array is provided Harper will cycle through
+   the array as the response body for requests. Required.
 
 * *delay*: A delay to include when responding to the mock,
    in milliseconds. Optional. Defaults to no delay.
