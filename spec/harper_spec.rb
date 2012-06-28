@@ -2,10 +2,10 @@ $: << File.dirname(__FILE__) + "/.."
 
 require 'spec/spec_helper'
 require 'harper'
+require 'rexml/document'
 
 describe Harper::App do
   include Rack::Test::Methods
-
   supported_verbs = ["GET", "POST", "PUT", "DELETE"]
 
   let(:app) { Harper::App.new }
@@ -68,7 +68,7 @@ describe Harper::App do
       before(:each) do
         post '/h/mocks', mock_def
       end
-      
+
       it "should respond with a 201 created" do
         last_response.status.should == 201
       end
@@ -178,6 +178,86 @@ describe Harper::App do
       put '/h/control', {:command => "quit"}.to_json
     end
 
+  end
+
+  context "supporting multiple mocks for same request url" do
+    it "should return the mock response corresponding to the request body for xml requests" do
+      url = "/service-url"
+
+      xml_string = <<-EOF
+        <mydoc>
+          <someelement attribute="nanoo">first request</someelement>
+        </mydoc>
+      EOF
+      request_xml_one = REXML::Document.new xml_string
+      body_one = "response body for request one"
+      mock_def_for_first_request =
+        { :method => "POST",
+          :url => url,
+          :'content-type' => "application/xml",
+          :body => body_one,
+          :request_params => request_xml_one
+        }.to_json
+
+      post '/h/mocks', mock_def_for_first_request
+
+      xml_string = <<-EOF
+        <mydoc>
+          <someelement attribute="nanoo">Other request</someelement>
+        </mydoc>
+      EOF
+      request_xml_two = REXML::Document.new xml_string
+      body_two = "response body for request two"
+      mock_def_for_second_request =
+      { :method => "POST",
+        :url => url,
+        :'content-type' => "application/xml",
+        :body => body_two,
+        :request_params => request_xml_two
+      }.to_json
+
+      post '/h/mocks', mock_def_for_second_request
+
+      post url, :body => request_xml_one
+      last_response.body.should == body_one
+
+      post url, :body => request_xml_two
+      last_response.body.should == body_two
+    end
+
+    it "should return the mock response corresponding to the request body for json requests" do
+      url = "/service-url"
+
+      request_json_one = {:param => "param 1"}.to_json
+      body_one = "response body for request one"
+      mock_def_for_first_request =
+        { :method => "POST",
+          :url => url,
+          :'content-type' => "application/json",
+          :body => body_one,
+          :request_params => request_json_one
+        }.to_json
+
+      post '/h/mocks', mock_def_for_first_request
+
+      request_json_two = {:param => "param 2"}.to_json
+      body_two = "response body for request two"
+      mock_def_for_second_request =
+        { :method => "POST",
+          :url => url,
+          :'content-type' => "application/json",
+          :body => body_two,
+          :request_params => request_json_two
+        }.to_json
+
+      post '/h/mocks', mock_def_for_second_request
+
+      post url, :body => request_json_one
+      last_response.body.should == body_one
+
+      post url, :body => request_json_two
+      last_response.body.should == body_two
+    end
   end
 
 end

@@ -24,3 +24,7 @@ Then /^the "([^"]*)" mock is available at the URL in the "([^"]*)" header$/ do |
   get :from => id_url
   response.code.should == 200
 end
+
+When /^the application removes all registered mocks$/ do
+  delete_all_mocks
+end
