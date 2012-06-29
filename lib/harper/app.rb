@@ -86,7 +86,7 @@ module Harper
 
         logger.debug("#{request.request_method} request for a mock: '#{request.path}'")
 
-        request_params = request.params["body"] if request.params["body"]
+        request_params = request.body.read if request.body
         mock = retrieve_mock(mock_id, request.request_method, request_params)
 
         if mock

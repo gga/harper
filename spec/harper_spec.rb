@@ -2,7 +2,6 @@ $: << File.dirname(__FILE__) + "/.."
 
 require 'spec/spec_helper'
 require 'harper'
-require 'rexml/document'
 
 describe Harper::App do
   include Rack::Test::Methods
@@ -184,44 +183,42 @@ describe Harper::App do
     it "should return the mock response corresponding to the request body for xml requests" do
       url = "/service-url"
 
-      xml_string = <<-EOF
+      xml_string_for_request_one = <<-EOF
         <mydoc>
           <someelement attribute="nanoo">first request</someelement>
         </mydoc>
       EOF
-      request_xml_one = REXML::Document.new xml_string
       body_one = "response body for request one"
       mock_def_for_first_request =
         { :method => "POST",
           :url => url,
           :'content-type' => "application/xml",
           :body => body_one,
-          :request_params => request_xml_one
+          :request_params => xml_string_for_request_one
         }.to_json
 
       post '/h/mocks', mock_def_for_first_request
 
-      xml_string = <<-EOF
+      xml_string_for_request_two = <<-EOF
         <mydoc>
           <someelement attribute="nanoo">Other request</someelement>
         </mydoc>
       EOF
-      request_xml_two = REXML::Document.new xml_string
       body_two = "response body for request two"
       mock_def_for_second_request =
       { :method => "POST",
         :url => url,
         :'content-type' => "application/xml",
         :body => body_two,
-        :request_params => request_xml_two
+        :request_params => xml_string_for_request_two
       }.to_json
 
       post '/h/mocks', mock_def_for_second_request
 
-      post url, :body => request_xml_one
+      post url, xml_string_for_request_one
       last_response.body.should == body_one
 
-      post url, :body => request_xml_two
+      post url, xml_string_for_request_two
       last_response.body.should == body_two
     end
 
@@ -252,10 +249,10 @@ describe Harper::App do
 
       post '/h/mocks', mock_def_for_second_request
 
-      post url, :body => request_json_one
+      post url, request_json_one
       last_response.body.should == body_one
 
-      post url, :body => request_json_two
+      post url, request_json_two
       last_response.body.should == body_two
     end
   end
