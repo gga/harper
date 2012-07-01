@@ -32,8 +32,8 @@ module Harper
         if @@mocks[mock_id]
           return @@mocks[mock_id].first if @@mocks[mock_id].length == 1
           mocks_for_requested_http_method = @@mocks[mock_id].select { |m| m['method'] == http_method}
-          mock = mocks_for_requested_http_method.detect{|m| request_params =~ /#{m["request_params"]}/} if request_params
-          mock ||= mocks_for_requested_http_method.first
+          mock = mocks_for_requested_http_method.detect{|m| m["request_params"] && request_params =~ /#{m["request_params"]}/} if request_params
+          mock ||= mocks_for_requested_http_method.detect{|m| m["request_params"].nil?}
         end
       end
     end
