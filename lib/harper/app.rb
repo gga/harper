@@ -27,6 +27,15 @@ module Harper
       def mock_id(url)
         [url].pack('m').tr("+/=", "-_.").gsub("\n", '')
       end
+
+      def retrieve_mock(mock_id, http_method, request_body)
+        if @@mocks[mock_id]
+          return @@mocks[mock_id].first if @@mocks[mock_id].length == 1
+          mocks_for_requested_http_method = @@mocks[mock_id].select { |m| m['method'] == http_method}
+          mock = mocks_for_requested_http_method.detect{|m| m["request_body"] && request_body =~ /#{m["request_body"]}/} if request_body
+          mock ||= mocks_for_requested_http_method.detect{|m| m["request_body"].nil?}
+        end
+      end
     end
 
     post '/h/mocks' do
@@ -37,10 +46,11 @@ module Harper
       mock['id'] = mock_id(mock['url'])
       mock['method'].upcase!
       mock['delay'] = mock['delay'].to_f / 1000.0
-      @@mocks[mock['id']] = mock
+      @@mocks[mock['id']] ||= []
+      @@mocks[mock['id']] << mock
 
       logger.info("Created mock for endpoint: '#{mock['url']}'")
-      
+
       headers['location'] = "/h/mocks/#{mock['id']}"
       status "201"
     end
@@ -76,12 +86,14 @@ module Harper
 
         logger.debug("#{request.request_method} request for a mock: '#{request.path}'")
 
-        mock = @@mocks[mock_id]
-        if mock && request.request_method == mock['method']
+        request_body = request.body.read if request.body
+        mock = retrieve_mock(mock_id, request.request_method, request_body)
+
+        if mock
           content_type mock['content-type']
           status mock['status'] || "200"
           sleep mock['delay']
-          
+
           logger.info("Serving mocked body for endpoint: '#{mock['url']}'")
 
           case mock['body']

@@ -50,6 +50,17 @@ Harper will silently replace it with the new mock.
 * *delay*: A delay to include when responding to the mock,
    in milliseconds. Optional. Defaults to no delay.
 
+* *request_body*: The params are used to compare with the actual request
+   body to find out whether the mock applies. This request_body is
+   optional and is required only in scenarios where you want multiple
+   requests to the same url return different response based on some
+   parameter sent in the request. The value passed in can actually be xml
+   read from a file, json read from a file or simply values in the request.
+   They need not be the whole request body - partial request params work.
+   However these must be conspicuously different across the requests i.e
+   they should not be so generic that they appear in all requests to
+   that url.
+
 ## Typical Use
 
 1. Start Harper at the very start of your test run.
