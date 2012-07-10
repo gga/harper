@@ -28,12 +28,12 @@ module Harper
         [url].pack('m').tr("+/=", "-_.").gsub("\n", '')
       end
 
-      def retrieve_mock(mock_id, http_method, request_params)
+      def retrieve_mock(mock_id, http_method, request_body)
         if @@mocks[mock_id]
           return @@mocks[mock_id].first if @@mocks[mock_id].length == 1
           mocks_for_requested_http_method = @@mocks[mock_id].select { |m| m['method'] == http_method}
-          mock = mocks_for_requested_http_method.detect{|m| m["request_params"] && request_params =~ /#{m["request_params"]}/} if request_params
-          mock ||= mocks_for_requested_http_method.detect{|m| m["request_params"].nil?}
+          mock = mocks_for_requested_http_method.detect{|m| m["request_body"] && request_body =~ /#{m["request_body"]}/} if request_body
+          mock ||= mocks_for_requested_http_method.detect{|m| m["request_body"].nil?}
         end
       end
     end
@@ -86,8 +86,8 @@ module Harper
 
         logger.debug("#{request.request_method} request for a mock: '#{request.path}'")
 
-        request_params = request.body.read if request.body
-        mock = retrieve_mock(mock_id, request.request_method, request_params)
+        request_body = request.body.read if request.body
+        mock = retrieve_mock(mock_id, request.request_method, request_body)
 
         if mock
           content_type mock['content-type']

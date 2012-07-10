@@ -194,7 +194,7 @@ describe Harper::App do
           :url => url,
           :'content-type' => "application/xml",
           :body => body_one,
-          :request_params => xml_string_for_request_one
+          :request_body => xml_string_for_request_one
         }.to_json
 
       post '/h/mocks', mock_def_for_first_request
@@ -210,7 +210,7 @@ describe Harper::App do
         :url => url,
         :'content-type' => "application/xml",
         :body => body_two,
-        :request_params => xml_string_for_request_two
+        :request_body => xml_string_for_request_two
       }.to_json
 
       post '/h/mocks', mock_def_for_second_request
@@ -232,7 +232,7 @@ describe Harper::App do
           :url => url,
           :'content-type' => "application/json",
           :body => body_one,
-          :request_params => request_json_one
+          :request_body => request_json_one
         }.to_json
 
       post '/h/mocks', mock_def_for_first_request
@@ -244,7 +244,7 @@ describe Harper::App do
           :url => url,
           :'content-type' => "application/json",
           :body => body_two,
-          :request_params => request_json_two
+          :request_body => request_json_two
         }.to_json
 
       post '/h/mocks', mock_def_for_second_request
@@ -271,7 +271,7 @@ describe Harper::App do
           :url => url,
           :'content-type' => "application/xml",
           :body => body_one,
-          :request_params => xml_string_for_request_one
+          :request_body => xml_string_for_request_one
         }.to_json
 
       post '/h/mocks', mock_def_for_first_request
@@ -286,30 +286,11 @@ describe Harper::App do
 
       post '/h/mocks', mock_def_for_second_request_without_request_body
 
-      xml_string_for_request_three = <<-EOF
-        <mydoc>
-          <someelement attribute="nanoo">Third request</someelement>
-        </mydoc>
-      EOF
-      body_three = "response body for request three"
-      mock_def_for_third_request =
-        { :method => "POST",
-          :url => url,
-          :'content-type' => "application/xml",
-          :body => body_three,
-          :request_params => xml_string_for_request_three
-        }.to_json
-
-      post '/h/mocks', mock_def_for_third_request
-
       post url, xml_string_for_request_one
       last_response.body.should == body_one
 
       post url
       last_response.body.should == body_two
-
-      post url, xml_string_for_request_three
-      last_response.body.should == body_three
     end
   end
 
