@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    harper (0.1.1)
+    harper (1.1.0)
       httparty
       json (>= 1.4.6)
       sinatra (>= 1.0.0)
@@ -24,12 +24,12 @@ GEM
     gherkin (2.7.6)
       json (>= 1.4.6)
     highline (1.6.11)
-    httparty (0.8.1)
-      multi_json
+    httparty (0.8.3)
+      multi_json (~> 1.0)
       multi_xml
     json (1.6.5)
-    multi_json (1.1.0)
-    multi_xml (0.4.1)
+    multi_json (1.3.6)
+    multi_xml (0.5.1)
     rack (1.4.1)
     rack-protection (1.2.0)
       rack
