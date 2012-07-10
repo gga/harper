@@ -31,6 +31,10 @@ class ClientApplication
     @response = self.class.delete @known_mocks[name][:url]
   end
 
+  def delete_all_mocks
+    self.class.delete "/h/mocks"
+  end
+
   def get(options)
     timed { @response = self.class.get options[:from] }
   end

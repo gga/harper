@@ -69,6 +69,7 @@ Feature: Mock an HTTP RPC web service
     Given a defined response mock with a "status" of "<STATUS>"
     When  the application issues a "GET" request to the mock
     Then  the response code should be "<STATUS>"
+    When the application removes all registered mocks
   Examples:
     | STATUS |
     |    200 |
@@ -86,6 +87,7 @@ Feature: Mock an HTTP RPC web service
     Given a defined response mock with a "delay" of "<MILLISECONDS>"
     When  the application issues a "GET" request to the mock
     Then  the response time should be at least "<MILLISECONDS>"
+    When the application removes all registered mocks
   Examples:
     | MILLISECONDS |
     |            0 |
