@@ -15,7 +15,7 @@ describe Harper::App do
   let(:content_type) { "text/plain" }
   let(:body) { "fake body" }
   let(:delay) { 0 }
-  
+
   let(:mock_def) do
     { :method => method,
       :url => url,
@@ -71,7 +71,7 @@ describe Harper::App do
       it "should respond with a 201 created" do
         last_response.status.should == 201
       end
-      
+
       it "should point to a newly created mock resource" do
         last_response.headers['Location'].should match(%r{/h/mocks/})
       end
@@ -169,7 +169,7 @@ describe Harper::App do
   end
 
   context "controlling harper" do
-    
+
     it "should exit, abruptly, on demand" do
       host = mock('hosting server')
       host.should_receive(:shutdown)
@@ -294,4 +294,22 @@ describe Harper::App do
     end
   end
 
+  context "support for cookies" do
+
+    it "should send back cookies registered in the mock" do
+      mock =
+        {:method => "POST",
+         :url => "url",
+         :'content-type' => "application/xml",
+         :body => "body",
+         :cookies => {"UserID" => "JohnDoe","sampleCookie" => "cookieValue"}
+        }.to_json
+
+      post '/h/mocks', mock
+
+      post "url"
+
+      last_response.headers["Set-Cookie"].should == "UserID=JohnDoe\nsampleCookie=cookieValue"
+    end
+  end
 end
