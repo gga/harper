@@ -20,6 +20,12 @@ module Harper
     end
 
     helpers do
+      def cookies(mock)
+        mock["cookies"].each_pair do |key, value|
+          response.set_cookie(key, value)
+        end
+      end
+
       def logger
         LOGGER
       end
@@ -90,6 +96,7 @@ module Harper
         mock = retrieve_mock(mock_id, request.request_method, request_body)
 
         if mock
+          cookies(mock) if mock["cookies"]
           content_type mock['content-type']
           status mock['status'] || "200"
           sleep mock['delay']
