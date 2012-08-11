@@ -296,10 +296,15 @@ describe Harper::App do
 
   context "support for cookies" do
 
+    after(:each) do
+      delete '/h/mocks'
+    end
+
     it "should send back cookies registered in the mock" do
+      url = "/someUrl"
       mock =
         {:method => "POST",
-         :url => "url",
+         :url => url,
          :'content-type' => "application/xml",
          :body => "body",
          :cookies => {"UserID" => "JohnDoe","sampleCookie" => "cookieValue"}
@@ -307,9 +312,96 @@ describe Harper::App do
 
       post '/h/mocks', mock
 
-      post "url"
+      post url
 
       last_response.headers["Set-Cookie"].should == "UserID=JohnDoe\nsampleCookie=cookieValue"
+    end
+
+    it "should send back response based on match of cookies in the request with those registered in the mock" do
+      url = "/someUrl"
+      mock_with_no_cookie =
+        {:method => "POST",
+         :url => url,
+         :'content-type' => "application/xml",
+         :body => "body one"
+        }.to_json
+
+      mock_two =
+        {:method => "POST",
+         :url => url,
+         :'content-type' => "application/xml",
+         :body => "body two",
+         :request_cookies => {"UserID" => "JohnDoe"}
+        }.to_json
+
+      mock_three =
+        {:method => "POST",
+         :url => url,
+         :'content-type' => "application/xml",
+         :body => "body three",
+         :request_cookies => {"UserID" => "JohnDoe1"}
+        }.to_json
+
+
+      post '/h/mocks', mock_with_no_cookie
+      post '/h/mocks', mock_two
+      post '/h/mocks', mock_three
+
+      post url
+      last_response.body.should == "body one"
+
+      set_cookie "UserID=JohnDoe"
+      set_cookie "Key1=Value1"
+      post url
+      last_response.body.should == "body two"
+
+      set_cookie "UserID=JohnDoe1"
+      post url
+      last_response.body.should == "body three"
+    end
+
+    it "should send back response based on cookies in the request even if request body is the same" do
+      url = "/someUrl"
+
+      request_json = {:param => "request body 1"}.to_json
+      mock_one =
+        {:method => "POST",
+         :url => url,
+         :'content-type' => "application/xml",
+         :request_body => request_json,
+         :body => "body one",
+         :request_cookies => {"UserID" => "JohnDoe"}
+        }.to_json
+
+      mock_two =
+        {:method => "POST",
+         :url => url,
+         :'content-type' => "application/xml",
+         :body => "body two",
+         :request_body => request_json,
+        }.to_json
+
+      mock_three =
+        {:method => "POST",
+         :url => url,
+         :'content-type' => "application/xml",
+         :body => "body three",
+        }.to_json
+
+
+      post '/h/mocks', mock_one
+      post '/h/mocks', mock_two
+      post '/h/mocks', mock_three
+
+      post url
+      last_response.body.should == "body three"
+
+      post url, request_json
+      last_response.body.should == "body two"
+
+      set_cookie "UserID=JohnDoe"
+      post url, request_json
+      last_response.body.should == "body one"
     end
   end
 end
