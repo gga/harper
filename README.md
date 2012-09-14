@@ -61,6 +61,32 @@ Harper will silently replace it with the new mock.
    they should not be so generic that they appear in all requests to
    that url.
 
+* *request_cookies*: This is a hash of key value pairs of cookies being
+   expected in the actual request, which will be used by harper for matching
+   before sending back the mock response.
+
+   sample usage:
+
+      harperClient.mock({:method => "POST",
+                   :url => "/url",
+                   :'content-type' => "application/xml",
+                   :request_body => request_json,
+                   :body => "response body",
+                   :request_cookies => {"UserID" => "JohnDoe"}
+                  })
+
+* *cookies*: This is a hash of key value pairs of cookies that harper will
+   send back in the mock response.
+
+   sample usage:
+
+      harperClient.mock({:method => "POST",
+                      :url => "/url",
+                      :'content-type' => "application/xml",
+                      :body => "response body",
+                      :cookies => {"UserID" => "JohnDoe","sampleCookie" => "cookieValue"}
+                     })
+
 ## Typical Use
 
 1. Start Harper at the very start of your test run.
