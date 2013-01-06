@@ -53,11 +53,11 @@ Harper will silently replace it with the new mock.
 * *cookies*: This is a hash of key value pairs of cookies that harper will
   send back in the mock response. For example:
 
-      harper.mock :method => "POST",
-                  :url => "/url",
-                  :'content-type' => "application/xml",
-                  :body => "response body",
-                  :cookies => {"UserID" => "JohnDoe", "sampleCookie" => "cookieValue"}
+    harper.mock :method => "POST",
+                :url => "/url",
+                :'content-type' => "application/xml",
+                :body => "response body",
+                :cookies => {"UserID" => "JohnDoe", "sampleCookie" => "cookieValue"}
 
 * *request_body*: The params are used to compare with the actual request
   body to find out whether the mock applies. This request_body is
@@ -74,12 +74,12 @@ Harper will silently replace it with the new mock.
   expected in the actual request, which will be used by harper for matching
   before sending back the mock response. For example:
 
-      harper.mock :method => "POST",
-                  :url => "/url",
-                  :'content-type' => "application/xml",
-                  :request_body => request_json,
-                  :body => "response body",
-                  :request_cookies => {"UserID" => "JohnDoe"}
+    harper.mock :method => "POST",
+                :url => "/url",
+                :'content-type' => "application/xml",
+                :request_body => request_json,
+                :body => "response body",
+                :request_cookies => {"UserID" => "JohnDoe"}
 
 ## Typical Use
 
