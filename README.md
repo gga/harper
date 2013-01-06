@@ -42,44 +42,44 @@ Harper will silently replace it with the new mock.
 
 * *status*: The HTTP status code to provide. Optional. Defaults to 200.
 * *content_type*: What content-type header to set when responding with
-   the mock. Required.
+  the mock. Required.
 * *body*: Either a string to be used as the HTTP response body, or an
-   array of strings. If an array is provided Harper will cycle through
-   the array as the response body for requests. Required.
+  array of strings. If an array is provided Harper will cycle through
+  the array as the response body for requests. Required.
 
 * *delay*: A delay to include when responding to the mock,
-   in milliseconds. Optional. Defaults to no delay.
+  in milliseconds. Optional. Defaults to no delay.
 
 * *cookies*: This is a hash of key value pairs of cookies that harper will
-   send back in the mock response. For example:
+  send back in the mock response. For example:
 
-       harper.mock :method => "POST",
-                   :url => "/url",
-                   :'content-type' => "application/xml",
-                   :body => "response body",
-                   :cookies => {"UserID" => "JohnDoe", "sampleCookie" => "cookieValue"}
+      harper.mock :method => "POST",
+                  :url => "/url",
+                  :'content-type' => "application/xml",
+                  :body => "response body",
+                  :cookies => {"UserID" => "JohnDoe", "sampleCookie" => "cookieValue"}
 
 * *request_body*: The params are used to compare with the actual request
-   body to find out whether the mock applies. This request_body is
-   optional and is required only in scenarios where you want multiple
-   requests to the same url return different response based on some
-   parameter sent in the request. The value passed in can actually be xml
-   read from a file, json read from a file or simply values in the request.
-   They need not be the whole request body - partial request params work.
-   However these must be conspicuously different across the requests i.e
-   they should not be so generic that they appear in all requests to
-   that url.
+  body to find out whether the mock applies. This request_body is
+  optional and is required only in scenarios where you want multiple
+  requests to the same url return different response based on some
+  parameter sent in the request. The value passed in can actually be xml
+  read from a file, json read from a file or simply values in the request.
+  They need not be the whole request body - partial request params work.
+  However these must be conspicuously different across the requests i.e
+  they should not be so generic that they appear in all requests to
+  that url.
 
 * *request_cookies*: This is a hash of key value pairs of cookies being
-   expected in the actual request, which will be used by harper for matching
-   before sending back the mock response. For example:
+  expected in the actual request, which will be used by harper for matching
+  before sending back the mock response. For example:
 
-       harper.mock :method => "POST",
-                   :url => "/url",
-                   :'content-type' => "application/xml",
-                   :request_body => request_json,
-                   :body => "response body",
-                   :request_cookies => {"UserID" => "JohnDoe"}
+      harper.mock :method => "POST",
+                  :url => "/url",
+                  :'content-type' => "application/xml",
+                  :request_body => request_json,
+                  :body => "response body",
+                  :request_cookies => {"UserID" => "JohnDoe"}
 
 ## Typical Use
 
