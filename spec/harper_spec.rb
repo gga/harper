@@ -343,9 +343,9 @@ describe Harper::App do
         }.to_json
 
 
-      post '/h/mocks', mock_with_no_cookie
-      post '/h/mocks', mock_two
       post '/h/mocks', mock_three
+      post '/h/mocks', mock_two
+      post '/h/mocks', mock_with_no_cookie
 
       post url
       last_response.body.should == "body one"

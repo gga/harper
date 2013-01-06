@@ -3,6 +3,8 @@ require 'sinatra/base'
 require 'logger'
 require 'json'
 
+require 'harper/mock_filter'
+
 module Harper
   class App < Sinatra::Base
 
@@ -20,10 +22,8 @@ module Harper
     end
 
     helpers do
-      def cookies(mock)
-        mock["cookies"].each_pair do |key, value|
-          response.set_cookie(key, value)
-        end
+      def cookies(mocked_cookies)
+        mocked_cookies.each_pair { |k, v| response.set_cookie(k, v) } if mocked_cookies
       end
 
       def logger
@@ -34,59 +34,23 @@ module Harper
         [url].pack('m').tr("+/=", "-_.").gsub("\n", '')
       end
 
-      def retrieve_mock(mock_id, http_method, request_body, request_cookies)
+      def retrieve_mock(mock_id, request)
         if @@mocks[mock_id]
+          # If there is only one mock with the id, then ignore all other filters
           return @@mocks[mock_id].first if @@mocks[mock_id].length == 1
-          mocks_matching_http_method = filter_by_http_method(http_method, mock_id)
-          mocks_filtered_by_request_body = filter_by_request_body(mocks_matching_http_method, request_body)
-          filtered_mocks = mocks_filtered_by_request_body || mocks_matching_http_method
-          mock_matching_cookies = filter_by_cookies(filtered_mocks, request_cookies)
-          if mock_matching_cookies then
-            mock_matching_cookies
-          else
-            if mocks_matching_request_body_exist?(mocks_filtered_by_request_body)
-              mock_matching_request_body_but_not_cookie(mocks_filtered_by_request_body)
-            else
-              mock_matching_http_method_but_not_request_body(mocks_matching_http_method)
-            end
-          end
+
+          # Mock parameters
+          method = request.request_method
+          body = request.body ? request.body.read : ''
+          cookies = request.cookies
+
+          mocks_for(mock_id).by_method(method).by_body(body).by_cookies(cookies).value
         end
       end
-    end
 
-    def mocks_matching_request_body_exist?(mocks_filtered_by_request_body)
-      mocks_filtered_by_request_body && !mocks_filtered_by_request_body.empty?
-    end
-
-    def mock_matching_http_method_but_not_request_body(mocks)
-      mocks.detect { |m| m["request_body"].nil? }
-    end
-
-    def mock_matching_request_body_but_not_cookie(mocks)
-      mocks.detect { |m| m["request_cookies"].nil? }
-    end
-
-    def filter_by_cookies(mocks, request_cookies)
-      mocks.detect do |mock|
-        mock["request_cookies"] && request_cookies_contain_all_cookies_registered_in_mock?(mock, request_cookies)
-      end if request_cookies
-    end
-
-    def request_cookies_contain_all_cookies_registered_in_mock?(mock, request_cookies)
-      mock["request_cookies"].each_pair do |key, value|
-        if request_cookies[key] != value
-          return false
-        end
+      def mocks_for(mock_id)
+        MockFilter.new(@@mocks[mock_id])
       end
-      true
-    end
-
-    def filter_by_request_body(mocks_for_requested_http_method, request_body)
-      mocks_for_requested_http_method.select { |m| m["request_body"] && request_body =~ /#{m["request_body"]}/ }  unless request_body.empty?
-    end
-
-    def filter_by_http_method(http_method, mock_id)
-      @@mocks[mock_id].select { |m| m['method'] == http_method }
     end
 
     post '/h/mocks' do
@@ -137,11 +101,10 @@ module Harper
 
         logger.debug("#{request.request_method} request for a mock: '#{request.path}'")
 
-        request_body = request.body.read if request.body
-        mock = retrieve_mock(mock_id, request.request_method, request_body, request.cookies)
+        mock = retrieve_mock(mock_id, request)
 
         if mock
-          cookies(mock) if mock["cookies"]
+          cookies mock['cookies']
           content_type mock['content-type']
           status mock['status'] || "200"
           sleep mock['delay']
