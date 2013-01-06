@@ -50,6 +50,15 @@ Harper will silently replace it with the new mock.
 * *delay*: A delay to include when responding to the mock,
    in milliseconds. Optional. Defaults to no delay.
 
+* *cookies*: This is a hash of key value pairs of cookies that harper will
+   send back in the mock response. For example:
+
+       harper.mock :method => "POST",
+                   :url => "/url",
+                   :'content-type' => "application/xml",
+                   :body => "response body",
+                   :cookies => {"UserID" => "JohnDoe", "sampleCookie" => "cookieValue"}
+
 * *request_body*: The params are used to compare with the actual request
    body to find out whether the mock applies. This request_body is
    optional and is required only in scenarios where you want multiple
@@ -63,29 +72,14 @@ Harper will silently replace it with the new mock.
 
 * *request_cookies*: This is a hash of key value pairs of cookies being
    expected in the actual request, which will be used by harper for matching
-   before sending back the mock response.
+   before sending back the mock response. For example:
 
-   sample usage:
-
-      harperClient.mock({:method => "POST",
+       harper.mock :method => "POST",
                    :url => "/url",
                    :'content-type' => "application/xml",
                    :request_body => request_json,
                    :body => "response body",
                    :request_cookies => {"UserID" => "JohnDoe"}
-                  })
-
-* *cookies*: This is a hash of key value pairs of cookies that harper will
-   send back in the mock response.
-
-   sample usage:
-
-      harperClient.mock({:method => "POST",
-                      :url => "/url",
-                      :'content-type' => "application/xml",
-                      :body => "response body",
-                      :cookies => {"UserID" => "JohnDoe","sampleCookie" => "cookieValue"}
-                     })
 
 ## Typical Use
 
